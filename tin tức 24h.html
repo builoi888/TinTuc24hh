@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tin Tức 24h</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f4f4f4;
+}
+
+/* HEADER */
+header{
+  background:#b30000;
+  color:white;
+  text-align:center;
+  padding:18px;
+}
+
+/* MENU */
+nav{
+  background:white;
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  padding:10px;
+}
+nav span{
+  cursor:pointer;
+  font-weight:bold;
+  color:#b30000;
+}
+
+/* CONTAINER */
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.news-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+/* CARD */
+.card{
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  transition:0.2s;
+}
+.card:hover{transform:scale(1.01);}
+
+.card img{
+  width:100%;
+  height:170px;
+  object-fit:cover;
+}
+
+.tag{
+  display:inline-block;
+  background:#b30000;
+  color:white;
+  font-size:11px;
+  padding:3px 6px;
+  margin:8px;
+  border-radius:4px;
+}
+
+.card h3{
+  font-size:15px;
+  margin:8px 10px;
+}
+
+.card p{
+  font-size:12px;
+  margin:0 10px 12px;
+  color:#555;
+}
+
+/* POST */
+#postView{
+  display:none;
+  max-width:900px;
+  margin:auto;
+  background:white;
+  padding:25px;
+  border-radius:10px;
+  line-height:1.8;
+}
+
+#postView img{
+  width:100%;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+.back-btn{
+  padding:8px 14px;
+  background:#b30000;
+  color:white;
+  border:none;
+  cursor:pointer;
+  border-radius:6px;
+  margin-bottom:15px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📰 TIN TỨC 24H</h1>
+  <p>Cập nhật liên tục 24/7</p>
+</header>
+
+<nav>
+  <span onclick="filter('all')">Tất cả</span>
+  <span onclick="filter('AI')">Công nghệ</span>
+  <span onclick="filter('Kinh tế')">Kinh tế</span>
+  <span onclick="filter('Bóng đá')">Thể thao</span>
+  <span onclick="filter('Vàng')">Tài chính</span>
+</nav>
+
+<div class="container" id="home">
+  <div class="news-grid" id="news"></div>
+</div>
+
+<div id="postView">
+  <button class="back-btn" onclick="back()">← Quay lại</button>
+  <h1 id="title"></h1>
+  <img id="img">
+  <div id="content"></div>
+</div>
+
+<script>
+
+/* ===== TẠO BÀI DÀI KIỂU BÁO THẬT ===== */
+function longContent(title, cat){
+let text = "";
+text += title + ". ";
+text += "Chuyên mục " + cat + " ghi nhận diễn biến mới trong ngày. ";
+
+text += "Theo phóng viên, thông tin này đang thu hút sự quan tâm lớn từ dư luận. ";
+
+for(let i=0;i<30;i++){
+text += "Các chuyên gia nhận định rằng diễn biến liên quan đến " + cat + " đang có nhiều thay đổi đáng chú ý, tác động trực tiếp đến kinh tế - xã hội và xu hướng phát triển trong thời gian tới. ";
+}
+
+text += "Hiện các cơ quan liên quan đang tiếp tục theo dõi và cập nhật thông tin mới nhất.";
+return text;
+}
+
+/* ===== DATA 20 TIN CHẤT LƯỢNG ===== */
+let posts = [
+{ id:1, cat:"AI", title:"AI hỗ trợ chẩn đoán bệnh tại TP.HCM", img:"https://picsum.photos/800/400?11", content: longContent("AI hỗ trợ chẩn đoán bệnh tại TP.HCM","AI") },
+{ id:2, cat:"AI", title:"Robot phục vụ trong khách sạn 5 sao", img:"https://picsum.photos/800/400?12", content: longContent("Robot phục vụ trong khách sạn 5 sao","AI") },
+{ id:3, cat:"AI", title:"AI trong giáo dục tăng hiệu quả học tập", img:"https://picsum.photos/800/400?13", content: longContent("AI trong giáo dục tăng hiệu quả học tập","AI") },
+{ id:4, cat:"AI", title:"Chatbot AI thay đổi dịch vụ khách hàng", img:"https://picsum.photos/800/400?14", content: longContent("Chatbot AI thay đổi dịch vụ khách hàng","AI") },
+{ id:5, cat:"AI", title:"Xe tự lái thử nghiệm tại Việt Nam", img:"https://picsum.photos/800/400?15", content: longContent("Xe tự lái thử nghiệm tại Việt Nam","AI") },
+
+{ id:6, cat:"Kinh tế", title:"GDP Việt Nam tăng trưởng 6.8%", img:"https://picsum.photos/800/400?16", content: longContent("GDP Việt Nam tăng trưởng 6.8%","Kinh tế") },
+{ id:7, cat:"Kinh tế", title:"Xuất khẩu tăng mạnh trong quý II", img:"https://picsum.photos/800/400?17", content: longContent("Xuất khẩu tăng mạnh trong quý II","Kinh tế") },
+{ id:8, cat:"Kinh tế", title:"FDI đổ mạnh vào Việt Nam", img:"https://picsum.photos/800/400?18", content: longContent("FDI đổ mạnh vào Việt Nam","Kinh tế") },
+{ id:9, cat:"Kinh tế", title:"Bất động sản phục hồi trở lại", img:"https://picsum.photos/800/400?19", content: longContent("Bất động sản phục hồi trở lại","Kinh tế") },
+{ id:10, cat:"Kinh tế", title:"Thị trường chứng khoán tăng điểm", img:"https://picsum.photos/800/400?20", content: longContent("Thị trường chứng khoán tăng điểm","Kinh tế") },
+
+{ id:11, cat:"Bóng đá", title:"Việt Nam thắng Thái Lan 2-0", img:"https://picsum.photos/800/400?21", content: longContent("Việt Nam thắng Thái Lan 2-0","Bóng đá") },
+{ id:12, cat:"Bóng đá", title:"U23 Việt Nam vào bán kết châu Á", img:"https://picsum.photos/800/400?22", content: longContent("U23 Việt Nam vào bán kết châu Á","Bóng đá") },
+{ id:13, cat:"Bóng đá", title:"V-League mùa giải hấp dẫn", img:"https://picsum.photos/800/400?23", content: longContent("V-League mùa giải hấp dẫn","Bóng đá") },
+{ id:14, cat:"Bóng đá", title:"HLV mới của đội tuyển Việt Nam", img:"https://picsum.photos/800/400?24", content: longContent("HLV mới của đội tuyển Việt Nam","Bóng đá") },
+{ id:15, cat:"Bóng đá", title:"Cầu thủ trẻ nổi bật mùa giải", img:"https://picsum.photos/800/400?25", content: longContent("Cầu thủ trẻ nổi bật mùa giải","Bóng đá") },
+
+{ id:16, cat:"Vàng", title:"Giá vàng tăng mạnh", img:"https://picsum.photos/800/400?26", content: longContent("Giá vàng tăng mạnh","Vàng") },
+{ id:17, cat:"Vàng", title:"USD ảnh hưởng thị trường vàng", img:"https://picsum.photos/800/400?27", content: longContent("USD ảnh hưởng thị trường vàng","Vàng") },
+{ id:18, cat:"Vàng", title:"Bitcoin biến động mạnh", img:"https://picsum.photos/800/400?28", content: longContent("Bitcoin biến động mạnh","Vàng") },
+{ id:19, cat:"Vàng", title:"Nhà đầu tư thận trọng", img:"https://picsum.photos/800/400?29", content: longContent("Nhà đầu tư thận trọng","Vàng") },
+{ id:20, cat:"Vàng", title:"Thị trường tài chính toàn cầu biến động", img:"https://picsum.photos/800/400?30", content: longContent("Thị trường tài chính toàn cầu biến động","Vàng") }
+];
+
+/* ===== RENDER ===== */
+const news=document.getElementById("news");
+
+function render(list){
+news.innerHTML="";
+list.forEach(p=>{
+let div=document.createElement("div");
+div.className="card";
+div.innerHTML=`
+<span class="tag">${p.cat}</span>
+<img src="${p.img}">
+<h3>${p.title}</h3>
+<p>${p.content.substring(0,120)}...</p>
+`;
+div.onclick=()=>openPost(p.id);
+news.appendChild(div);
+});
+}
+
+render(posts);
+
+/* ===== FILTER ===== */
+function filter(cat){
+if(cat==="all") return render(posts);
+render(posts.filter(p=>p.cat===cat));
+}
+
+/* ===== OPEN POST ===== */
+function openPost(id){
+let p = posts.find(x=>x.id==id);
+
+document.getElementById("home").style.display="none";
+document.getElementById("postView").style.display="block";
+
+document.getElementById("title").innerText=p.title;
+document.getElementById("img").src=p.img;
+document.getElementById("content").innerText=p.content;
+}
+
+/* ===== BACK ===== */
+function back(){
+document.getElementById("home").style.display="block";
+document.getElementById("postView").style.display="none";
+render(posts);
+}
+
+</script>
+
+</body>
+</html>
